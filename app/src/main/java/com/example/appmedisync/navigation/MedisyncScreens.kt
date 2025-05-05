@@ -3,5 +3,8 @@ package com.example.appmedisync.navigation
 enum class MedisyncScreens {
     SplashScreen,
     LoginScreen,
-    HomeScreen
+    HomeScreen,
+    ConfigurarPerfil2,
+    ConfigurarPerfil,
+    VincularReloj
 }

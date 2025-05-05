@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.appcompat:appcompat:1.7.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,8 +71,15 @@ dependencies {
     //FIREBASE
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+
+    //CREDENCIALES
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     //FIREBASE AUTENTIFICACION
-    implementation("com.google.firebase:firebase-auth-ktx:23.2.0")
+    //implementation("com.google.firebase:firebase-auth-ktx:23.2.0")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.3")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
 }

@@ -1,6 +1,9 @@
 package com.example.appmedisync.screens.login
 
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +15,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,9 +33,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,12 +51,26 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.appmedisync.R
 import com.example.appmedisync.navigation.MedisyncScreens
+import com.example.appmedisync.signin.GoogleSignInUtils
 
 @Composable
 fun MedisyncLoginScreen(
     navController: NavController,
-    viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ){
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()){
+        GoogleSignInUtils.doGoogleSignIn(
+            context = context,
+            scope = scope,
+            launcher = null,
+            login = {
+                Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
     val showLoginForm = rememberSaveable {
         mutableStateOf(true)
     }
@@ -72,9 +94,38 @@ fun MedisyncLoginScreen(
                     email, password ->
                     Log.d("Medisync","Logueando con $ $email y $password")
                     viewModel.signInWithEmailAndPassword(email, password){
-                        navController.navigate(MedisyncScreens.HomeScreen.name)
+                        //navController.navigate(MedisyncScreens.HomeScreen.name)
+                        navController.navigate(MedisyncScreens.ConfigurarPerfil2.name)
                     }
                 }
+                Button(
+                    onClick = {
+                        GoogleSignInUtils.doGoogleSignIn(
+                            context = context,
+                            scope = scope,
+                            launcher = launcher,
+                            login = {
+                                Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+                                navController.navigate(MedisyncScreens.ConfigurarPerfil.name)
+                            }
+                        )
+
+                    },
+                    modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black
+                    )
+                ){
+                    Image(
+                        painter = painterResource(id = R.drawable.google),
+                        contentDescription = "icono de google",
+                        modifier = Modifier.size(60.dp).padding(3.dp)
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Text("Continuar con Google")
+                }
+
             }else{
                 Text(text = "Crea una cuenta", fontWeight = FontWeight.Bold, fontSize = 25.sp, modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 20.dp), textAlign = TextAlign.Start)
                 UserForm(
@@ -83,7 +134,7 @@ fun MedisyncLoginScreen(
                     email, password ->
                     Log.d("Medisync","Creando cuenta con $ $email y $password")
                     viewModel.createUserWithEmailAndPassword(email, password){
-                        navController.navigate(MedisyncScreens.HomeScreen.name)
+                        navController.navigate(MedisyncScreens.ConfigurarPerfil.name)
                     }
                 }
             }

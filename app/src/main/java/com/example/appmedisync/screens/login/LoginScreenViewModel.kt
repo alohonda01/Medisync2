@@ -25,6 +25,7 @@ class LoginScreenViewModel: ViewModel() {
                         home()
                     }else{
                         Log.d("Medisync","signInWithEmailAndPassword: ${task.result.toString()}!!")
+
                     }
                 }
         }
@@ -84,7 +85,6 @@ class LoginScreenViewModel: ViewModel() {
                 Log.e("Medisync", "Error al crear documento de usuario", e)
             }
     }
-
 }
 
 
