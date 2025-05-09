@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appmedisync.R
 import com.example.appmedisync.navigation.MedisyncScreens
@@ -58,6 +59,7 @@ fun MedisyncLoginScreen(
     navController: NavController,
     viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ){
+    val viewModel: LoginScreenViewModel = viewModel()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()){

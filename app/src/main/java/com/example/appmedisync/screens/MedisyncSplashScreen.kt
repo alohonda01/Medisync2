@@ -55,10 +55,10 @@ fun MedisyncSplashScreen(navController: NavController) {
 
             val currentUser = FirebaseAuth.getInstance().currentUser
             val destination = if (currentUser?.email.isNullOrEmpty()) {
-                MedisyncScreens.LoginScreen.name
+                MedisyncScreens.HomeScreen.name
             } else {
                 //CAMBIAR ESTO A HOME CUANDO ESTE TERMINADO
-                MedisyncScreens.LoginScreen.name
+                MedisyncScreens.ConfigurarPerfil2.name
             }
 
             withContext(Dispatchers.Main) {

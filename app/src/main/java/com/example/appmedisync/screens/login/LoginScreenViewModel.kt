@@ -10,10 +10,12 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginScreenViewModel: ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
     private val _loading = MutableLiveData(false)
+    private val db = FirebaseFirestore.getInstance()
 
     fun signInWithEmailAndPassword(email: String, password: String, home: ()-> Unit)
     = viewModelScope.launch {
@@ -70,8 +72,6 @@ class LoginScreenViewModel: ViewModel() {
             "contraseña" to password,
             "email" to auth.currentUser?.email,
             "fecha_registro" to FieldValue.serverTimestamp(),
-            "nombre" to (displayName ?: "Usuario"),
-            "tipo_paciente_medico" to "1",
             "usuario_id" to userId
         )
 
@@ -85,7 +85,52 @@ class LoginScreenViewModel: ViewModel() {
                 Log.e("Medisync", "Error al crear documento de usuario", e)
             }
     }
+
+    suspend fun saveUserData(
+        userId: String,
+        email: String,
+        provider: String,
+        displayName: String? = null,
+        photoUrl: String? = null
+    ) {
+        try {
+            val (nombre, apellidos) = displayName?.let { parseDisplayName(it) } ?: ("" to "")
+
+            val userData = hashMapOf(
+                "email" to email,
+                "nombre" to nombre,
+                "apellidos" to apellidos,
+                "foto_url" to photoUrl,
+                "fecha_registro" to FieldValue.serverTimestamp(),
+                "usuario_id" to userId,
+                "proveedor" to provider
+            )
+
+            db.collection("usuarios")
+                .document(userId)
+                .set(userData)
+                .await()
+        } catch (e: Exception) {
+            Log.e("LoginScreen", "Error al guardar datos del usuario", e)
+            throw e
+        }
+    }
+
+    private fun parseDisplayName(displayName: String): Pair<String, String> {
+        return if (displayName.contains(" ")) {
+            val parts = displayName.split(" ")
+            val firstName = parts.first()
+            val lastName = parts.drop(1).joinToString(" ")
+            firstName to lastName
+        } else {
+            displayName to ""
+        }
+    }
+
 }
+
+
+
 
 
 
