@@ -94,7 +94,5 @@ fun VincularReloj(navController: NavController){
             Text(text = "Omitir", color = Color.White)
 
         }
-
-
     }
 }

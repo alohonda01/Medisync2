@@ -57,8 +57,7 @@ fun MedisyncSplashScreen(navController: NavController) {
             val destination = if (currentUser?.email.isNullOrEmpty()) {
                 MedisyncScreens.HomeScreen.name
             } else {
-                //CAMBIAR ESTO A HOME CUANDO ESTE TERMINADO
-                MedisyncScreens.ConfigurarPerfil2.name
+                MedisyncScreens.VincularReloj.name
             }
 
             withContext(Dispatchers.Main) {

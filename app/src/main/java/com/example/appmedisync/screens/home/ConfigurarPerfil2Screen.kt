@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.appmedisync.R
 import com.example.appmedisync.Usuarios.UsuarioViewModel
 import com.example.appmedisync.navigation.MedisyncScreens
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
@@ -51,8 +53,6 @@ fun ConfigurarPerfil2Preview(){
     //Para navegar entre screens
     val navController = rememberNavController()
     ConfigurarPerfil2(navController = navController)
-
-
 }
 
 @Composable
@@ -61,6 +61,9 @@ fun ConfigurarPerfil2(navController: NavController){
     val viewModel: UsuarioViewModel = viewModel()
     val usuario by viewModel.usuario.collectAsState()
     var showWhyWeNeedThis by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -99,13 +102,6 @@ fun ConfigurarPerfil2(navController: NavController){
             )
         }
 
-//        item {
-//            OutLineTextFieldSample2(
-//                "Medicamentos",
-//                "Ej. Paracetamol, Ibuprofeno, Metformina",
-//            )
-//        }
-
         item{
             UsuarioTextField(
                 labelText = "Medicamentos",
@@ -126,10 +122,6 @@ fun ConfigurarPerfil2(navController: NavController){
                 textAlign = TextAlign.Start
             )
         }
-
-//        item {
-//            OutLineTextFieldSample2("Enfermedades", "Ej. Diabetes, Hipertensión, Neumonía")
-//        }
 
         item{
             UsuarioTextField(
@@ -167,7 +159,20 @@ fun ConfigurarPerfil2(navController: NavController){
         item {
             Button(
                 onClick = {
-                    navController.navigate(MedisyncScreens.VincularReloj.name)
+                    isLoading = true
+                    scope.launch {
+                        val exito = viewModel.guardarEnfermedadesyMedicamentosFirebase()
+                        isLoading = false
+
+                        if (exito) {
+                            navController.navigate(MedisyncScreens.ConfigurarPerfil2.name)
+                        } else {
+                            showErrorDialog = true
+                        }
+                    }
+
+                    //navController.navigate(MedisyncScreens.VincularReloj.name)
+                    navController.navigate(MedisyncScreens.HomeScreen.name)
                 },
                 modifier = Modifier
                     .padding(top = 20.dp)
@@ -180,16 +185,9 @@ fun ConfigurarPerfil2(navController: NavController){
         }
     }
 
-    // Coloca esto al final de tu LazyColumn, antes del cierre del composable
     if (showWhyWeNeedThis) {
         AlertDialog(
             onDismissRequest = { showWhyWeNeedThis = false },
-//            title = {
-//                Text(
-//                    text = "Por qué solicitamos esta información",
-//                    style = MaterialTheme.typography.headlineSmall
-//                )
-//            },
             text = {
                 Text(
                     text = "Necesitamos esta información para:\n\n" +
@@ -214,19 +212,3 @@ fun ConfigurarPerfil2(navController: NavController){
     }
 
 }
-
-//@Composable
-//fun OutLineTextFieldSample2(labelText: String, placeholderText: String){
-//    var text by remember {mutableStateOf(TextFieldValue(""))}
-//    OutlinedTextField(
-//        value = text,
-//        placeholder = { Text(text = placeholderText)},
-//        label = { Text(text = labelText)},
-//        onValueChange = {
-//            text = it
-//        },
-//        modifier = Modifier.fillMaxWidth().padding(start = 30.dp, end = 30.dp),
-//    )
-//}
-
-

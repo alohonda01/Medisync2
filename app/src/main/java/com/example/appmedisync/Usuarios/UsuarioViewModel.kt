@@ -129,7 +129,9 @@ class UsuarioViewModel : ViewModel(){
                 "altura" to usuario.value.altura,
                 "peso" to usuario.value.peso,
                 "genero" to usuario.value.genero,
-                "numero_telefono" to usuario.value.numeroTelefono
+                "numero_telefono" to usuario.value.numeroTelefono,
+                "enfermedades" to usuario.value.enfermedades,
+                "medicamentos" to usuario.value.medicamentos
             )
 
             db.collection("usuarios")
@@ -141,6 +143,42 @@ class UsuarioViewModel : ViewModel(){
         } catch (e: Exception) {
             Log.e("Firebase", "Error al guardar usuario", e)
             false
+        }
+    }
+
+    suspend fun guardarEnfermedadesyMedicamentosFirebase(): Boolean {
+        return try {
+            val userId = auth.currentUser?.uid ?: throw Exception("Usuario no autenticado")
+            val usuarioData = hashMapOf(
+                "enfermedades" to usuario.value.enfermedades,
+                "medicamentos" to usuario.value.medicamentos
+            )
+            true
+        } catch (e: Exception) {
+            Log.e("Firebase", "Error al guardar usuario", e)
+            false
+        }
+    }
+
+    fun cargarDatosUsuario() {
+        viewModelScope.launch {
+            try {
+                val userId = auth.currentUser?.uid ?: return@launch
+                val document = db.collection("usuarios").document(userId).get().await()
+                if (document.exists()) {
+                    _usuario.emit(Usuario(
+                        nombre = document.getString("nombre") ?: "",
+                        apellidos = document.getString("apellidos") ?: "",
+                        edad = document.getLong("edad")?.toInt() ?: 0,
+                        altura = document.getDouble("altura") ?: 0.0,
+                        peso = document.getDouble("peso") ?: 0.0,
+                        genero = document.getString("genero") ?: "",
+                        numeroTelefono = document.getString("numero_telefono") ?: ""
+                    ))
+                }
+            } catch (e: Exception) {
+                Log.e("UsuarioViewModel", "Error al cargar datos", e)
+            }
         }
     }
 

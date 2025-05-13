@@ -47,7 +47,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.appmedisync.R
 import com.example.appmedisync.Usuarios.UsuarioViewModel
 import com.example.appmedisync.navigation.MedisyncScreens
-import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
@@ -59,7 +58,7 @@ fun ConfigurarPerfilPreview(){
 
 @Composable
 fun ConfigurarPerfil(navController: NavController){
-    //val context = LocalContext.current
+
     val viewModel: UsuarioViewModel = viewModel()
     val usuario by viewModel.usuario.collectAsState()
     val camposCompletos = remember(usuario) {
@@ -175,23 +174,6 @@ fun ConfigurarPerfil(navController: NavController){
                     errorMessage = if (mostrarErrores && usuario.nombre.isBlank()) "Campo requerido" else null
                 )
 
-                //OutLineTextFieldSample("Genero")
-//                UsuarioTextField(
-//                    labelText = "Género",
-//                    placeholderText = "Género",
-//                    value = usuario.genero,
-//                    onValueChange = {viewModel.actualizarGenero(it)}
-//                )
-
-                //OutLineTextFieldSample("Numero de Telefono")
-//                UsuarioTextField(
-//                    labelText = "Número de Telefono",
-//                    placeholderText = "Número de Telefono",
-//                    value = usuario.numeroTelefono,
-//                    onValueChange = {viewModel.actualizarNumeroTelefono(it)},
-//                    isError = mostrarErrores && usuario.nombre.isBlank(),
-//                    errorMessage = if (mostrarErrores && usuario.nombre.isBlank()) "Campo requerido" else null
-//                )
                 UsuarioTextField(
                     labelText = "Número de Teléfono",
                     placeholderText = "Ej: 8715065835",
@@ -277,8 +259,8 @@ fun UsuarioTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     isError: Boolean = false,
     errorMessage: String? = null,
-    maxLength: Int? = null,  // Nuevo parámetro para longitud máxima
-    filter: (String) -> Boolean = { true }  // Nuevo parámetro para filtrado
+    maxLength: Int? = null,
+    filter: (String) -> Boolean = { true }
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
@@ -315,37 +297,6 @@ fun UsuarioTextField(
         )
     }
 }
-
-//@Composable
-//fun UsuarioTextField(
-//    labelText: String,
-//    placeholderText: String,
-//    value: String,
-//    onValueChange: (String) -> Unit,
-//    keyboardType: KeyboardType = KeyboardType.Text,
-//    isError: Boolean = false,
-//    errorMessage: String? = null
-//) {
-//    Column(modifier = Modifier
-//        .fillMaxWidth()
-//    ) {
-//        OutlinedTextField(
-//            value = value,
-//            placeholder = { Text(text = placeholderText) },
-//            label = { Text(text = labelText) },
-//            onValueChange = onValueChange,
-//            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-//            modifier = Modifier.fillMaxWidth()
-//                .padding(horizontal = 30.dp),
-//            isError = isError,
-//            supportingText = {
-//                if (isError && errorMessage != null) {
-//                    Text(text = errorMessage, color = Color.Red)
-//                }
-//            }
-//        )
-//    }
-//}
 
 @Composable
 fun SelectorGenero(

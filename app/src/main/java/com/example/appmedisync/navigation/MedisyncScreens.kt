@@ -6,5 +6,9 @@ enum class MedisyncScreens {
     HomeScreen,
     ConfigurarPerfil2,
     ConfigurarPerfil,
-    VincularReloj
+    VincularReloj,
+    TransicionScreen,
+    Enfermedades,
+    Medicamentos,
+    Reportes
 }
