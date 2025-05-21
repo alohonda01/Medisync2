@@ -8,6 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.appmedisync.app.screens.configuracion.Configuracion
 import com.example.appmedisync.app.screens.home.Home
+import com.example.appmedisync.app.screens.home.enfermedades.Enfermedades
+import com.example.appmedisync.app.screens.home.medicinas.Medicamentos
+import com.example.appmedisync.app.screens.home.reportes.Reportes
 import com.example.appmedisync.app.screens.login.Login
 import com.example.appmedisync.app.screens.splash.SplashScreen
 
@@ -30,6 +33,15 @@ fun Navigation(){
         }
         composable(Screens.HomeScreen.name){
             Home(navController = navController)
+        }
+        composable(Screens.ReportesScreen.name){
+            Reportes(navController = navController)
+        }
+        composable(Screens.EnfermedadesScreen.name){
+            Enfermedades(navController = navController)
+        }
+        composable(Screens.MedicamentosScreen.name){
+            Medicamentos(navController = navController)
         }
     }
 }
