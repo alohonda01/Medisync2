@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="AppMedisync.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-12T17:05:52.705433Z">
+        <DropdownSelection timestamp="2025-05-17T20:49:06.403952Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/alohonda/.android/avd/Pixel_8.avd" />
@@ -12,6 +12,9 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="ConfiguracionPreview">
+        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>
