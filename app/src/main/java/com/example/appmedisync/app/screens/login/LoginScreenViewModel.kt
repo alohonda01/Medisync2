@@ -51,26 +51,27 @@ class LoginScreenViewModel: ViewModel() {
         }
     }
 
-//    private fun createUser(displayName: String?){
-//        val userId = auth.currentUser?.uid
-//        //val user = mutableMapOf<String, Any>()
-//
-//        val user = User(
-//            userId = userId.toString(),
-//            displayName = displayName.toString(),
-//            avatarUrl = "",
-//            quote = "Lo dificil ya paso",
-//            profession = "Android Dev",
-//            id = null
-//        ).toMap()
-//
-//        FirebaseFirestore.getInstance().collection("users")
-//            .add(user)
-//            .addOnSuccessListener {
-//                Log.d("Medisync", "Creado ${it.id}")
-//            }.addOnFailureListener {
-//                Log.d("Medisync", "Ocurrió un error ${it}")
-//            }
-//    }
+    fun verificarCorreoEnFirestore(
+        email: String,
+        onExiste: () -> Unit,
+        onNoExiste: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { documentos ->
+                if (!documentos.isEmpty) {
+                    onExiste()
+                } else {
+                    onNoExiste()
+                }
+            }
+            .addOnFailureListener {
+                onError("Error al verificar el correo: ${it.message}")
+            }
+    }
 
 }

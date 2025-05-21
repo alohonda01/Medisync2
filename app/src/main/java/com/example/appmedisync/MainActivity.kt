@@ -24,8 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     // 5 minutos en milisegundos
-    //private val inactivityTimeout = 5 * 60 * 1000L
-    private val inactivityTimeout = 60 * 1000L
+    private val inactivityTimeout = 5 * 60 * 1000L
+    //private val inactivityTimeout = 60 * 1000L
 
     private lateinit var handler: Handler
     private val logoutRunnable = Runnable {

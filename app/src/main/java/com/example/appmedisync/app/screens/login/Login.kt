@@ -49,10 +49,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.appmedisync.R
 import com.example.appmedisync.app.screens.navigation.Screens
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Preview(showBackground = true)
 @Composable
@@ -66,6 +70,8 @@ fun Login(
     navController: NavController,
     viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
     val showLoginForm = rememberSaveable {
         mutableStateOf(true)
     }
@@ -104,15 +110,63 @@ fun Login(
                     modifier = Modifier.padding(vertical = 20.dp),
                     fontWeight = FontWeight.Bold,
                     fontSize = 25.sp)
-                UserForm(
-                    isCreateAccount = false
-                ){
-                    email, password ->
-                    Log.d("Medisync","Logueado con $email y $password")
-                    viewModel.signInWithEmailAndPassword(email, password) {
-                        navController.navigate(Screens.HomeScreen.name)
-                    }
+
+                UserForm(isCreateAccount = false) { email, password ->
+                    val auth = FirebaseAuth.getInstance()
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnSuccessListener { result ->
+                            // 1) UID del usuario autenticado
+                            val uid = result.user?.uid
+                            if (uid == null) {
+                                Toast.makeText(context, "Error interno: UID nulo", Toast.LENGTH_LONG).show()
+                                return@addOnSuccessListener
+                            }
+                            // 2) Consultar Firestore si existe el perfil
+                            db.collection("users")
+                                .document(uid)
+                                .get()
+                                .addOnSuccessListener { doc ->
+                                    val dest = if (doc.exists()) {
+                                        // Perfil ya creado → Home
+                                        navController.navigate(Screens.HomeScreen.name) {
+                                            popUpTo(Screens.LoginScreen.name) { inclusive = true }
+                                        }
+                                    } else {
+                                        // Sin perfil → Configuración
+                                        navController.navigate(Screens.ConfiguracionScreen.name) {
+                                            popUpTo(Screens.LoginScreen.name) { inclusive = true }
+                                        }
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(
+                                        context,
+                                        "Error al leer perfil: ${e.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                        }
+                        .addOnFailureListener { exception ->
+                            // Capturar error de usuario no encontrado
+                            val errorCode = (exception as? FirebaseAuthException)?.errorCode
+                            if (errorCode == "ERROR_USER_NOT_FOUND") {
+                                Toast.makeText(
+                                    context,
+                                    "Usuario no encontrado. Regístrate primero.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                showLoginForm.value = false
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Error al iniciar sesión: Crea una cuenta",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                showLoginForm.value = false
+                            }
+                        }
                 }
+
             }else{
                 Text(text = "Crea una cuenta",
                     modifier = Modifier.padding(vertical = 20.dp),
@@ -158,11 +212,42 @@ fun Login(
             Button(onClick = {
                 GoogleSignInUtils.doGoogleSignIn(
                     context = context,
-                    scope = scope,
+                    scope   = scope,
                     launcher = launcher,
-                    login = {
-                        Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-                        navController.navigate(Screens.ConfiguracionScreen.name)
+                    login   = {
+                        // Este bloque se llama cuando GoogleSignInUtils ya ha
+                        // completado el sign-in con FirebaseAuth.
+                        val auth = FirebaseAuth.getInstance()
+                        val user = auth.currentUser
+                        if (user == null) {
+                            Toast.makeText(context, "Error al autenticar con Google", Toast.LENGTH_LONG).show()
+                            return@doGoogleSignIn
+                        }
+
+                        val uid = user.uid
+                        db.collection("users")
+                        .document(uid)
+                        .get()
+                        .addOnSuccessListener { doc ->
+                            if (doc.exists()) {
+                                // Perfil ya existe → Home
+                                navController.navigate(Screens.HomeScreen.name) {
+                                    popUpTo(Screens.LoginScreen.name) { inclusive = true }
+                                }
+                            } else {
+                                // No hay perfil → Configuración
+                                navController.navigate(Screens.ConfiguracionScreen.name) {
+                                    popUpTo(Screens.LoginScreen.name) { inclusive = true }
+                                }
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(
+                                context,
+                                "Error al leer perfil: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 )
 
@@ -201,7 +286,6 @@ fun UserForm(
     val passwordVisible = rememberSaveable {
         mutableStateOf(false)
     }
-
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -349,3 +433,4 @@ fun InputField(
         )
     )
 }
+
