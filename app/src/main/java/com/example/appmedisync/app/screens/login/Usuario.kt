@@ -9,7 +9,5 @@ data class Usuario(
     val peso: Double,
     val altura: Double,
     val telefono: String,
-    val genero: String,
-    val medicinas: String,
-    val enfermedades: String
+    val genero: String
 )

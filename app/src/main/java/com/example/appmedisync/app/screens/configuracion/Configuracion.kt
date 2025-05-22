@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -23,7 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,8 +67,6 @@ fun Configuracion(navController: NavController){
     var apellidos by rememberSaveable { mutableStateOf("") }
     var genero by rememberSaveable { mutableStateOf("") }
     var telefono by rememberSaveable { mutableStateOf("") }
-    var medicinas by rememberSaveable { mutableStateOf("") }
-    var enfermedades by rememberSaveable { mutableStateOf("") }
     
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -146,20 +142,6 @@ fun Configuracion(navController: NavController){
 
         }
 
-        item{
-            Divider(thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 25.dp))
-            CampoTexto(valor = medicinas,
-                onValueChange = { medicinas = it },
-                etiqueta = "Medicinas")
-        }
-
-        item{
-            CampoTexto(valor = enfermedades,
-                onValueChange = { enfermedades = it },
-                etiqueta = "Enfermedades")
-        }
-
         item {
             Button(
                 onClick = {
@@ -179,9 +161,7 @@ fun Configuracion(navController: NavController){
                         peso = peso,
                         altura = altura,
                         telefono = telefono,
-                        genero = genero,
-                        medicinas = medicinas,
-                        enfermedades = enfermedades
+                        genero = genero
                     )
 
                     db.collection("users")
