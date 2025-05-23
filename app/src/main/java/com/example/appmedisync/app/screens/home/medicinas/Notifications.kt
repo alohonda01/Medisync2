@@ -10,10 +10,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import android.Manifest
+import android.app.AlarmManager
 import android.content.pm.PackageManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import com.example.appmedisync.R
+import java.util.Calendar
 import kotlin.jvm.java
 
 fun createNotificationChannel(context: Context) {
@@ -62,7 +64,7 @@ fun mostrarNotificacion(context: Context, titulo: String, mensaje: String) {
             snoozePendingIntent)
         .setAutoCancel(true)
 
-    val notificationId = titulo.hashCode() // único por medicamento
+    val notificationId = titulo.hashCode()
 
     with(NotificationManagerCompat.from(context)) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -79,6 +81,56 @@ fun mostrarNotificacion(context: Context, titulo: String, mensaje: String) {
         notify(notificationId, builder.build())
     }
 }
+
+fun scheduleNotification(context: Context, medicamento: Medicamento) {
+    val timeParts = medicamento.hora.split(":")
+    val hour = timeParts.getOrNull(0)?.toIntOrNull() ?: return
+    val minute = timeParts.getOrNull(1)?.toIntOrNull() ?: return
+
+    // 1. Establecer la hora exacta en el calendario
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+
+        // Si ya pasó la hora, programa para el día siguiente
+        if (before(Calendar.getInstance())) {
+            //add(Calendar.SECOND, 10)
+            add(Calendar.DAY_OF_YEAR, 1)
+        }
+    }
+
+    // 2. Crear Intent hacia el BroadcastReceiver
+    val intent = Intent(context, MyBroadcastReceiver::class.java).apply {
+        putExtra("titulo", medicamento.nombre)
+        putExtra("mensaje", "Es hora de tomar tu medicamento: ${medicamento.nombre}")
+    }
+
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        medicamento.id.hashCode(), // único por medicamento
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    // 3. Calcular la frecuencia en milisegundos
+    val frecuenciaEnMillis = medicamento.frecuencia * 24 * 60 * 60 * 1000L
+
+    // 4. Programar notificación repetitiva
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.setRepeating(
+        AlarmManager.RTC_WAKEUP,
+        calendar.timeInMillis,
+        frecuenciaEnMillis,
+        pendingIntent
+    )
+
+    Log.d("SCHEDULE", "Notificación agendada para ${medicamento.nombre} a las $hour:$minute cada ${medicamento.frecuencia} días")
+
+}
+
+
 
 
 

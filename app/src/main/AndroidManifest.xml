@@ -30,7 +30,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".app.screens.home.medicinas.AlertDetails" />
-        <receiver android:name=".app.screens.home.medicinas.MyBroadcastReceiver" />
+        <receiver android:name=".app.screens.home.medicinas.MyBroadcastReceiver"
+            android:exported="false" />
+
     </application>
 
 </manifest>

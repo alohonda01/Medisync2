@@ -48,6 +48,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel(this)
+        //mostrarNotificacion(this, "Medisync","Hora de tomar tu medicamento")
+        requestNotificationPermissionIfNeeded()
         enableEdgeToEdge()
 
         handler = Handler(Looper.getMainLooper())
@@ -62,21 +64,17 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    1001
-                )
-            } else {
-                mostrarNotificacion(this, "Medisync", "Hora de tomar tu medicamento")
-            }
-        } else {
-            mostrarNotificacion(this, "Medisync", "Hora de tomar tu medicamento")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                this, // necesitas una referencia a tu `Activity`
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1001
+            )
+            return
         }
+
     }
 
 

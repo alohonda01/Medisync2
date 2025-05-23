@@ -97,6 +97,19 @@ fun AgregarMedicamentoDialog(
                     .add(datos)
                     .addOnSuccessListener {
                         Toast.makeText(context, "Medicamento guardado", Toast.LENGTH_SHORT).show()
+
+                        // Crear objeto Medicamento real
+                        val medicamento = Medicamento(
+                            id = it.id, // Usamos el ID del documento de Firestore
+                            nombre = nombre,
+                            dosis = dosis,
+                            frecuencia = frecuenciaInt,
+                            hora = hora
+                        )
+
+                        // 💥 Aquí llamas a la función
+                        scheduleNotification(context, medicamento)
+
                         onDismiss()
                     }
                     .addOnFailureListener { e ->
