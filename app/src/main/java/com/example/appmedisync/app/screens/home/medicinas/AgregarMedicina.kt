@@ -2,9 +2,13 @@ package com.example.appmedisync.app.screens.home.medicinas
 
 import android.app.TimePickerDialog
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MedicalInformation
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -16,8 +20,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -71,30 +77,39 @@ fun AgregarMedicamentoDialog(
         confirmButton = {
             Button(onClick = {
                 val uid = FirebaseAuth.getInstance().currentUser?.uid
-                if (uid != null) {
-                    val datos = mapOf(
-                        "nombre" to nombre,
-                        "dosis" to dosis,
-                        "frecuencia" to (frecuencia.toIntOrNull() ?: 1),
-                        "hora" to hora,
-                        "uid" to uid,
-                        "fechaInicio" to Timestamp.now()
-                    )
-                    Firebase.firestore.collection("medicamentos")
-                        .add(datos)
-                        .addOnSuccessListener {
-                            Log.d("Firestore", "Medicamento guardado correctamente")
-                            onDismiss()
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("Firestore", "Error al guardar medicamento", e)
-                        }
-                } else {
-                    Log.e("Firestore", "Usuario no logueado")
+
+                if (uid == null) {
+                    Toast.makeText(context, "No hay sesión iniciada", Toast.LENGTH_SHORT).show()
+                    return@Button
                 }
+
+                val frecuenciaInt = frecuencia.toIntOrNull()
+                if (frecuenciaInt == null || nombre.isBlank() || dosis.isBlank() || hora.isBlank()) {
+                    Toast.makeText(context, "Completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
+                val datos = mapOf(
+                    "nombre" to nombre,
+                    "dosis" to dosis,
+                    "frecuencia" to frecuenciaInt,
+                    "hora" to hora,
+                    "uid" to uid,
+                    "fechaInicio" to Timestamp.now()
+                )
+
+                Firebase.firestore.collection("medicamentos")
+                    .add(datos)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Medicamento guardado", Toast.LENGTH_SHORT).show()
+                        onDismiss()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                        Log.e("Firestore", "Error al guardar medicamento", e)
+                    }
             }) {
                 Text("Guardar")
-                onDismiss
             }
         },
         dismissButton = {
@@ -104,3 +119,5 @@ fun AgregarMedicamentoDialog(
         }
     )
 }
+
+

@@ -151,7 +151,6 @@ fun Configuracion(navController: NavController){
         item {
             Button(
                 onClick = {
-
                     val uid   = auth.currentUser?.uid
                     val mail  = auth.currentUser?.email.orEmpty()
                     val edad   = edad.toIntOrNull()    ?: 0

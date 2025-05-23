@@ -1,5 +1,7 @@
 package com.example.appmedisync.app.screens.home.medicinas
 
+import android.util.Log
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +35,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,17 +57,38 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.appmedisync.app.screens.navigation.Screens
-
-@Preview(showBackground = true)
-@Composable
-fun MedicamentosPreview(){
-    val navController = rememberNavController()
-    Medicamentos(navController = navController)
-}
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 
 @Composable
-fun Medicamentos(navController: NavController){
+fun Medicamentos(navController: NavController) {
     var mostrarDialogo by remember { mutableStateOf(false) }
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val medicamentos = remember { mutableStateListOf<Medicamento>() }
+
+    // Escuchar en tiempo real los medicamentos
+    LaunchedEffect(uid) {
+        if (uid != null) {
+            Firebase.firestore
+                .collection("medicamentos")
+                .whereEqualTo("uid", uid)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        Log.e("Firestore", "Error al leer medicamentos", error)
+                        return@addSnapshotListener
+                    }
+
+                    val lista = snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(Medicamento::class.java)?.copy(id = doc.id)
+                    } ?: emptyList()
+
+                    medicamentos.clear()
+                    medicamentos.addAll(lista)
+                }
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -90,56 +116,54 @@ fun Medicamentos(navController: NavController){
             }
         }
     ) { innerPadding ->
-        LazyColumn (
+        LazyColumn(
             modifier = Modifier
-                .background(Color(0xFFF2F2F2))
                 .fillMaxSize()
+                .background(Color(0xFFF2F2F2))
                 .padding(innerPadding),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
-        )
-        {
-            item{
+            contentPadding = PaddingValues(10.dp)
+        ) {
+            // Mostrar todos los medicamentos
+            items(medicamentos) { medicamento ->
                 MedicamentoCard(
-                    title = "Paracetamol",
-                    dosis = "Dosis: 20 mg",
-                    frecuencia = "Frecuencia: 2 días",
-                    hora = "Hora: 8:30 pm",
+                    title = medicamento.nombre,
+                    dosis = "Dosis: ${medicamento.dosis}",
+                    frecuencia = "Frecuencia: ${medicamento.frecuencia} días",
+                    hora = "Hora: ${medicamento.hora}",
                     icon = Icons.Default.MedicalInformation,
                     colorIcon = Color.Red,
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     fontSizeUnit = 18.sp,
-                    onClick = {
-                        // Navegar a pantalla de detalle de medicamentos
-                        navController.navigate(Screens.MedicamentosScreen.name)
-                    }
+                    onClick = {}
                 )
             }
 
-            item{
+            // Botón vacío al final
+            item {
                 CardVacia(
                     value = "Agrega un medicamento",
                     icon = Icons.Default.Add,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp, bottom = 20.dp),
                     colorText = Color.Gray,
                     onClick = {
                         println("CARD PRESIONADA")
                         mostrarDialogo = true
                     }
                 )
-
             }
-
         }
 
-    }
-
-    if (mostrarDialogo) {
-        AgregarMedicamentoDialog(
-            onDismiss = { mostrarDialogo = false }
-        )
+        if (mostrarDialogo) {
+            AgregarMedicamentoDialog(onDismiss = { mostrarDialogo = false })
+        }
     }
 }
+
+
 
 @Composable
 fun MedicamentoCard(
@@ -231,29 +255,11 @@ fun MedicamentoCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ){
-                    //BOTON MAS
+                    //BOTON ELIMINAR
                     Button(
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFA1E3F9),
-                            contentColor = Color.Black,
-                        ),
-                        border = BorderStroke(1.dp, Color.Gray),
-                        modifier = Modifier.padding(top = 15.dp, end = 10.dp)
-                    )
-                    {
-                        Image(
-                            painter = rememberVectorPainter(Icons.Default.Add),
-                            contentDescription = "Icono Google",
-                            modifier = Modifier
-                                .size(20.dp)
+                        onClick = {
 
-                        )
-                    }
-                    
-                    //BOTON MENOS
-                    Button(
-                        onClick = {},
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFA1E3F9),
                             contentColor = Color.Black,
@@ -264,7 +270,7 @@ fun MedicamentoCard(
                     {
                         Image(
                             painter = rememberVectorPainter(Icons.Default.Delete),
-                            contentDescription = "Icono Google",
+                            contentDescription = "Boton de eliminar medicamento",
                             modifier = Modifier
                                 .size(20.dp)
 
@@ -273,7 +279,9 @@ fun MedicamentoCard(
 
                     //BOTON MODIFICAR
                     Button(
-                        onClick = {},
+                        onClick = {
+
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFA1E3F9),
                             contentColor = Color.Black,
@@ -284,7 +292,7 @@ fun MedicamentoCard(
                     {
                         Image(
                             painter = rememberVectorPainter(Icons.Default.ModeEdit),
-                            contentDescription = "Icono Google",
+                            contentDescription = "Boton de modificar medicamento",
                             modifier = Modifier
                                 .size(20.dp)
 
