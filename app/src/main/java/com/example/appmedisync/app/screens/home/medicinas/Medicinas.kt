@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +32,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -47,7 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.appmedisync.R
 import com.example.appmedisync.app.screens.navigation.Screens
 
 @Preview(showBackground = true)
@@ -59,6 +62,8 @@ fun MedicamentosPreview(){
 
 @Composable
 fun Medicamentos(navController: NavController){
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             Row(
@@ -116,16 +121,23 @@ fun Medicamentos(navController: NavController){
                 CardVacia(
                     value = "Agrega un medicamento",
                     icon = Icons.Default.Add,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 5.dp),
                     colorText = Color.Gray,
                     onClick = {
+                        println("CARD PRESIONADA")
+                        mostrarDialogo = true
                     }
                 )
+
             }
 
         }
+
+    }
+
+    if (mostrarDialogo) {
+        AgregarMedicamentoDialog(
+            onDismiss = { mostrarDialogo = false }
+        )
     }
 }
 
@@ -141,7 +153,7 @@ fun MedicamentoCard(
     fontSizeUnit: TextUnit,
     cardWidth: Dp = 160.dp,
     cardHeight: Dp = 180.dp,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
 
     Column(
@@ -166,12 +178,6 @@ fun MedicamentoCard(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.weight(1f)
                 )
-                Icon(
-                    painter = painterResource(id = R.drawable.meds),
-                    tint = Color.Blue,
-                    contentDescription = "Icono de píldora rosa",
-                    modifier = Modifier.size(24.dp)
-                )
             }
         }
 
@@ -180,7 +186,7 @@ fun MedicamentoCard(
             modifier = modifier
                 .width(cardWidth)
                 .height(cardHeight)
-                .clickable(onClick = onClick),
+                .clickable { onClick() },
                 //.padding(start = 15.dp , top = 10.dp, end = 15.dp),
 
             shape = RoundedCornerShape(2.dp),
@@ -290,7 +296,6 @@ fun MedicamentoCard(
             }
         }
     }
-
 }
 
 @Composable
@@ -299,27 +304,23 @@ fun CardVacia(
     icon: ImageVector,
     modifier: Modifier = Modifier,
     colorText : Color,
-    cardWidth: Dp = 160.dp,
-    cardHeight: Dp = 120.dp,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = modifier
-            .width(cardWidth)
-            .height(cardHeight)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 15.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 15.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(vertical = 20.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -327,20 +328,20 @@ fun CardVacia(
                 text = value,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 5.dp),
-                fontSize = 20.sp,
                 color = colorText
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Box(
                 modifier = Modifier
-                    .size(30.dp)
-                    .background(Color(0xFFA1E3F9), CircleShape)
+                    .size(40.dp)
+                    .background(Color(0xFFA1E3F9), CircleShape),
+                contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = rememberVectorPainter(icon),
-                    contentDescription = "icono mas",
+                    contentDescription = "icono más",
                     modifier = Modifier
-                        .fillMaxSize()
+                        .size(24.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
@@ -348,6 +349,3 @@ fun CardVacia(
         }
     }
 }
-
-
-

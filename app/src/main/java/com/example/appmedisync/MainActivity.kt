@@ -1,6 +1,8 @@
 package com.example.appmedisync
 
+import android.Manifest;
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -19,13 +21,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.appmedisync.app.screens.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
 
+
+
 class MainActivity : ComponentActivity() {
     // 5 minutos en milisegundos
-    //private val inactivityTimeout = 5 * 60 * 1000L
-    private val inactivityTimeout = 60 * 1000L
+    private val inactivityTimeout = 5 * 60 * 1000L
+    //private val inactivityTimeout = 60 * 1000L
 
     private lateinit var handler: Handler
     private val logoutRunnable = Runnable {
@@ -49,6 +55,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ){
+                    requestNotificationPermissionIfNeeded()
                     MedisyncApp()
                 }
         }
@@ -73,6 +80,21 @@ class MainActivity : ComponentActivity() {
         handler.postDelayed(logoutRunnable, inactivityTimeout)
     }
 
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }
+    }
+
+
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -88,6 +110,8 @@ fun MedisyncApp(){
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Navigation()
+
         }
     }
 }
+

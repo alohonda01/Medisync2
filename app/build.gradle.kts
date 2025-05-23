@@ -83,5 +83,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.3")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
 
+    //NOTIFICACIONES PUSH
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.1")
+
 
 }

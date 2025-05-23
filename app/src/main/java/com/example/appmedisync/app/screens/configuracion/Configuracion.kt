@@ -100,37 +100,43 @@ fun Configuracion(navController: NavController){
                 CampoTexto(valor = nombre,
                     onValueChange = { nombre = it },
                     etiqueta = "Nombre",
-                    modifier = Modifier.weight(1f))
+                    modifier = Modifier.weight(1f),
+                    tipoTeclado = KeyboardType.Text)
 
                 CampoTexto(valor = apellidos,
                     onValueChange = { apellidos = it },
                     etiqueta = "Apellidos",
-                    modifier = Modifier.weight(1f))
+                    modifier = Modifier.weight(1f),
+                    tipoTeclado = KeyboardType.Text)
             }
         }
 
         item {
             CampoTexto(valor = edad,
                 onValueChange = { edad = it },
-                etiqueta = "Edad")
+                etiqueta = "Edad",
+                tipoTeclado = KeyboardType.Number)
         }
 
         item {
             CampoTexto(valor = peso,
                 onValueChange = { peso = it },
-                etiqueta = "Peso")
+                etiqueta = "Peso",
+                tipoTeclado = KeyboardType.Number)
         }
 
         item{
             CampoTexto(valor = altura,
                 onValueChange = { altura = it },
-                etiqueta = "Altura")
+                etiqueta = "Altura",
+                tipoTeclado = KeyboardType.Number)
         }
 
         item{
             CampoTexto(valor = telefono,
                 onValueChange = { telefono = it },
-                etiqueta = "Telefono")
+                etiqueta = "Telefono",
+                tipoTeclado = KeyboardType.Number)
         }
 
         item{
@@ -199,7 +205,7 @@ fun CampoTexto(
     valor: String,
     onValueChange: (String) -> Unit,
     etiqueta: String,
-    tipoTeclado: KeyboardType = KeyboardType.Text,
+    tipoTeclado: KeyboardType,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(

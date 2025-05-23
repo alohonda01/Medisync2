@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.appmedisync.app.screens.navigation.Screens
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Preview(showBackground = true)
@@ -23,7 +24,7 @@ fun SplashScreen(navController: NavController){
         delay(0L)
         //Para uso de pruebas se va directamente a login screen
         navController.navigate(Screens.LoginScreen.name)
-        //navController.navigate(Screens.ConfiguracionScreen.name)
+       // navController.navigate(Screens.MedicamentosScreen.name)
 
         //Descomentar para que funcione correctamente
 //        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()){
