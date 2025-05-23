@@ -2,4 +2,7 @@
     <string name="app_name">AppMedisync</string>
 <!--    //<string name="web_client_id">860581405853-jt48263k4c275h8r2gt0vltv4gcs1moh.apps.googleusercontent.com</string>-->
     <string name="web_client_id">860581405853-oltse8ir2o57hoj1s30af794dqko5fuf.apps.googleusercontent.com</string>
+    <string name="channel_name">Recordatorios de Medicamentos</string>
+    <string name="channel_description">Notificaciones programadas para tomar tus medicamentos</string>
+    <string name="snooze">Posponer</string>
 </resources>

@@ -23,18 +23,18 @@ fun SplashScreen(navController: NavController){
     LaunchedEffect(key1 = true){
         delay(0L)
         //Para uso de pruebas se va directamente a login screen
-        navController.navigate(Screens.LoginScreen.name)
+        //navController.navigate(Screens.LoginScreen.name)
        // navController.navigate(Screens.MedicamentosScreen.name)
 
         //Descomentar para que funcione correctamente
-//        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()){
-//            navController.navigate(Screens.LoginScreen.name)
-//        }else{
-//            navController.navigate(Screens.HomeScreen.name){
-//                popUpTo(Screens.SplashScreen.name){
-//                    inclusive = true
-//                }
-//            }
-//        }
+        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()){
+            navController.navigate(Screens.LoginScreen.name)
+        }else{
+            navController.navigate(Screens.HomeScreen.name){
+                popUpTo(Screens.SplashScreen.name){
+                    inclusive = true
+                }
+            }
+        }
     }
 }

@@ -18,13 +18,6 @@
         tools:targetApi="31"
         >
 
-        <service android:name=".app.screens.home.medicinas.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,9 +29,8 @@
 
             </intent-filter>
         </activity>
-
+        <activity android:name=".app.screens.home.medicinas.AlertDetails" />
+        <receiver android:name=".app.screens.home.medicinas.MyBroadcastReceiver" />
     </application>
-
-
 
 </manifest>

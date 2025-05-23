@@ -48,15 +48,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.appmedisync.app.screens.navigation.Screens
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
@@ -66,6 +64,8 @@ fun Medicamentos(navController: NavController) {
     var mostrarDialogo by remember { mutableStateOf(false) }
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     val medicamentos = remember { mutableStateListOf<Medicamento>() }
+    val context = LocalContext.current
+
 
     // Escuchar en tiempo real los medicamentos
     LaunchedEffect(uid) {
@@ -88,7 +88,6 @@ fun Medicamentos(navController: NavController) {
                 }
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -211,7 +210,6 @@ fun MedicamentoCard(
                 .width(cardWidth)
                 .height(cardHeight)
                 .clickable { onClick() },
-                //.padding(start = 15.dp , top = 10.dp, end = 15.dp),
 
             shape = RoundedCornerShape(2.dp),
             colors = CardDefaults.cardColors(
@@ -298,8 +296,6 @@ fun MedicamentoCard(
 
                         )
                     }
-
-
                 }
             }
         }

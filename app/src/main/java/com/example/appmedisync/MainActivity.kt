@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.appmedisync.app.screens.home.medicinas.createNotificationChannel
+import com.example.appmedisync.app.screens.home.medicinas.mostrarNotificacion
 import com.example.appmedisync.app.screens.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
 
@@ -45,21 +47,38 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNotificationChannel(this)
         enableEdgeToEdge()
 
         handler = Handler(Looper.getMainLooper())
         startInactivityTimer()
 
         setContent {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ){
-                    requestNotificationPermissionIfNeeded()
-                    MedisyncApp()
-                }
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                MedisyncApp()
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1001
+                )
+            } else {
+                mostrarNotificacion(this, "Medisync", "Hora de tomar tu medicamento")
+            }
+        } else {
+            mostrarNotificacion(this, "Medisync", "Hora de tomar tu medicamento")
         }
     }
+
 
     override fun onUserInteraction() {
         super.onUserInteraction()

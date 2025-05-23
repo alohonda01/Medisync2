@@ -85,6 +85,5 @@ dependencies {
 
     //NOTIFICACIONES PUSH
     implementation("com.google.firebase:firebase-messaging-ktx:24.1.1")
-
-
+    implementation("androidx.core:core-ktx:1.16.0")
 }
