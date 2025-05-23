@@ -96,7 +96,6 @@ fun scheduleNotification(context: Context, medicamento: Medicamento) {
 
         // Si ya pasó la hora, programa para el día siguiente
         if (before(Calendar.getInstance())) {
-            //add(Calendar.SECOND, 10)
             add(Calendar.DAY_OF_YEAR, 1)
         }
     }
@@ -104,7 +103,7 @@ fun scheduleNotification(context: Context, medicamento: Medicamento) {
     // 2. Crear Intent hacia el BroadcastReceiver
     val intent = Intent(context, MyBroadcastReceiver::class.java).apply {
         putExtra("titulo", medicamento.nombre)
-        putExtra("mensaje", "Es hora de tomar tu medicamento: ${medicamento.nombre}")
+        putExtra("mensaje", "Es hora de tomar tu ${medicamento.nombre}")
     }
 
     val pendingIntent = PendingIntent.getBroadcast(

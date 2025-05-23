@@ -180,23 +180,6 @@ fun HealthMetricsDashboard(navController: NavController) {
 
         //FILA 1
         HealthMetricCard(
-            title = "Enfermedades",
-            value = "Tus enfermedades",
-            icon = Icons.Default.Coronavirus,
-            color = Color(0xFF4ECDC4),
-            fontSizeUnit = 18.sp,
-            colorText = Color.Gray,
-            onClick = {
-                // Navegar a pantalla de detalle de enfermedades
-                navController.navigate(Screens.EnfermedadesScreen.name)
-            },
-            modifier = Modifier
-                .padding(top = 10.dp, start = 12.dp, end = 10.dp)
-                .fillMaxSize()
-        )
-
-        //FILA 2
-        HealthMetricCard(
             title = "Medicamentos",
             value = "Agregar o quitar medicamentos",
             icon = Icons.Default.MedicalInformation,
@@ -212,7 +195,7 @@ fun HealthMetricsDashboard(navController: NavController) {
             }
         )
 
-        //FILA 3
+        //FILA 1
         HealthMetricCard(
             title = "Reportes",
             value = "Ver o escribir reporte",
