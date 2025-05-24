@@ -18,6 +18,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "DEEPSEEK_API_KEY", "\"sk-435cbe28746b4f8db312032c07956f6e\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -86,4 +89,18 @@ dependencies {
     //NOTIFICACIONES PUSH
     implementation("com.google.firebase:firebase-messaging-ktx:24.1.1")
     implementation("androidx.core:core-ktx:1.16.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    
+    //Generacion de PDF's
+    implementation("com.itextpdf:itext7-core:8.0.3")
+    implementation("androidx.documentfile:documentfile:1.1.0")
 }

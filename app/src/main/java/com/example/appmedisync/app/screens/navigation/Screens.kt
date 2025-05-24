@@ -6,6 +6,5 @@ enum class Screens {
     ConfiguracionScreen,
     HomeScreen,
     ReportesScreen,
-    EnfermedadesScreen,
     MedicamentosScreen
 }

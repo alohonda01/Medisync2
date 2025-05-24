@@ -37,9 +37,6 @@ fun Navigation(){
         composable(Screens.ReportesScreen.name){
             Reportes(navController = navController)
         }
-        composable(Screens.EnfermedadesScreen.name){
-            Enfermedades(navController = navController)
-        }
         composable(Screens.MedicamentosScreen.name){
             Medicamentos(navController = navController)
         }
